@@ -1,19 +1,47 @@
 import { View, Text, Image, TextInput, Pressable } from 'react-native'
-import React, { useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
+import * as ImagePicker from 'expo-image-picker';
+import Button from '~/components/Button';
 const CreatePost = () => {
   const [caption, setCaption] = useState('')
+  const [image, setImage] = useState<string | null>(null)
+
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  useEffect(() => {
+    if (!image) {
+      pickImage()
+    }
+  }, [image])
+
   return (
-    <View className='p-3 items-center flex-1'>
+    <View className='p-3 items-center  flex-1'>
       {/* Image picker */}
 
-      <Image className='rounded-lg   w-52 aspect-[3/4]' source={{ uri: 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/1.jpg' }} />
-      <Text onPress={() => { }} className='text-blue-500 font-semibold m-5'>Change</Text>
+      {image ? (<Image className='rounded-lg bg-slate-400  w-52 aspect-[3/4]' source={{ uri: image }} />
+      ) : (
+        <View className='bg-slate-400 rounded-lg w-52 aspect-[3/4]' />
+      )}
+      <Text onPress={pickImage} className='text-blue-500 font-semibold m-5'>Change</Text>
       <TextInput value={caption} onChangeText={(newValue) => setCaption(newValue)} placeholder='What is on your mind' className='  w-full p-3' />
       <View className='mt-auto w-full'>
-        <Pressable className='bg-blue-500 w-full p-3 items-center rounded-md'>
-          <Text className='text-white font-semibold'>Share</Text>
-        </Pressable>
+
+        <Button title={'Share post'} />
       </View>
     </View>
   )
