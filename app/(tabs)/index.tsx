@@ -7,7 +7,8 @@ const FeedScreen = () => {
   return (
     <View>
       <FlatList data={posts}
-        contentContainerStyle={{ gap: 10 }}
+        contentContainerClassName='items-center '
+        contentContainerStyle={{ gap: 10, maxWidth: 512, width: '100%' }}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => <PostListItem post={item} />} />
     </View>
