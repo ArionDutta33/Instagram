@@ -1,11 +1,11 @@
-import { View, Text, Image, TextInput, Pressable } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, Image, TextInput, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import Button from '~/components/Button';
+import { uploadImage } from '~/libs/cloudinary';
 const CreatePost = () => {
-  const [caption, setCaption] = useState('')
-  const [image, setImage] = useState<string | null>(null)
-
+  const [caption, setCaption] = useState('');
+  const [image, setImage] = useState<string | null>(null);
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -25,26 +25,39 @@ const CreatePost = () => {
 
   useEffect(() => {
     if (!image) {
-      pickImage()
+      pickImage();
     }
-  }, [image])
+  }, [image]);
+
+  const createPost = async () => {
+    if (!image) return;
+    const response = await uploadImage(image);
+    console.log(response?.public_id);
+  };
 
   return (
-    <View className='p-3 items-center  flex-1'>
+    <View className="flex-1 items-center  p-3">
       {/* Image picker */}
 
-      {image ? (<Image className='rounded-lg bg-slate-400  w-52 aspect-[3/4]' source={{ uri: image }} />
+      {image ? (
+        <Image className="aspect-[3/4] w-52  rounded-lg bg-slate-400" source={{ uri: image }} />
       ) : (
-        <View className='bg-slate-400 rounded-lg w-52 aspect-[3/4]' />
+        <View className="aspect-[3/4] w-52 rounded-lg bg-slate-400" />
       )}
-      <Text onPress={pickImage} className='text-blue-500 font-semibold m-5'>Change</Text>
-      <TextInput value={caption} onChangeText={(newValue) => setCaption(newValue)} placeholder='What is on your mind' className='  w-full p-3' />
-      <View className='mt-auto w-full'>
-
-        <Button title={'Share post'} />
+      <Text onPress={pickImage} className="m-5 font-semibold text-blue-500">
+        Change
+      </Text>
+      <TextInput
+        value={caption}
+        onChangeText={(newValue) => setCaption(newValue)}
+        placeholder="What is on your mind"
+        className="  w-full p-3"
+      />
+      <View className="mt-auto w-full">
+        <Button onPress={createPost} title={'Share post'} />
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default CreatePost
+export default CreatePost;
