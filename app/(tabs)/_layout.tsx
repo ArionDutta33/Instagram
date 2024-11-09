@@ -1,33 +1,16 @@
-import { Link, Tabs } from 'expo-router';
+import React from 'react'
+import { Tabs } from 'expo-router'
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+ 
+const TabsLayout = () => {
+    return (
+        <Tabs screenOptions={{ tabBarActiveTintColor: '#f15454', tabBarShowLabel: false }}>
+            <Tabs.Screen name="index" options={{ title: "For you", tabBarIcon: ({ color }) => (<FontAwesome name="home" size={24} color={color} />) }} />
+            <Tabs.Screen name="new" options={{ title: " Create profile", tabBarIcon: ({ color }) => (<FontAwesome name="plus-square-o" size={24} color={color} />) }} />
+            <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color }) => (<FontAwesome name="user" size={24} color={color} />) }} />
 
-import { HeaderButton } from '../../components/HeaderButton';
-import { TabBarIcon } from '../../components/TabBarIcon';
-
-export default function TabLayout() {
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: 'black',
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <HeaderButton />
-            </Link>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
+        </Tabs>
+    )
 }
+
+export default TabsLayout

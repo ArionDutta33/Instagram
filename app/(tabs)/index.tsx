@@ -1,22 +1,26 @@
-import { Stack } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
-
-import { ScreenContent } from '~/components/ScreenContent';
-
-export default function Home() {
+import { View, Text, Image } from 'react-native'
+import React from 'react'
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import Feather from '@expo/vector-icons/Feather';
+import posts from "../../assets/data/posts.json"
+const FeedScreen = () => {
+  const post1 = posts[0]
   return (
-    <>
-      <Stack.Screen options={{ title: 'Tab One' }} />
-      <View style={styles.container}>
-        <ScreenContent path="app/(tabs)/index.tsx" title="Tab One" />
+    <View className='bg-white'>
+      <View className='p-3 flex-row items-center gap-2'>
+        <Image className='w-12 aspect-square rounded-full' source={{ uri: post1.user.image_url }} />
+        <Text className='font-semibold '>{post1.user.username}</Text>
       </View>
-    </>
-  );
+      <Image className='w-full aspect-[4/3]' source={{ uri: post1.image_url }} />
+      <View className='flex-row gap-3 p-3'>
+        <AntDesign name="hearto" size={20} color="black" />
+        <Ionicons name="chatbubble-outline" size={20} color="black" />
+        <Feather name="send" size={20} color="black" />
+        <Feather name="bookmark" className='ml-auto' size={20} color="black" />
+      </View>
+    </View>
+  )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-  },
-});
+export default FeedScreen
