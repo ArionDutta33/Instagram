@@ -1,4 +1,4 @@
-import { View, Text, Image, TextInput, Pressable } from 'react-native';
+import { View, Text, Image, TextInput, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import Button from '~/components/Button';
@@ -6,15 +6,23 @@ import { uploadImage } from '~/libs/cloudinary';
 import { supabase } from '~/utils/supabase';
 import { useAuth } from '../provider/AuthProvider';
 import { router } from 'expo-router';
+import { ResizeMode, Video } from 'expo-av';
+
 const CreatePost = () => {
   const [caption, setCaption] = useState('');
-  const [image, setImage] = useState<string | null>(null);
+  const [media, setMedia] = useState<string | null>(null);
+  const [mediaType, setMediaType] = useState<'video' | 'image' | undefined>();
   const { session } = useAuth();
 
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
+  useEffect(() => {
+    if (!media) {
+      pickMedia(); // Pick media if no media is selected
+    }
+  }, [media]);
+
+  const pickMedia = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -23,53 +31,94 @@ const CreatePost = () => {
     console.log(result);
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setMedia(result.assets[0].uri);
+      setMediaType(result.assets[0].type); // Set mediaType to image or video based on selection
     }
   };
 
-  useEffect(() => {
-    if (!image) {
-      pickImage();
-    }
-  }, [image]);
-
   const createPost = async () => {
-    if (!image) return;
-    const response = await uploadImage(image);
-    console.log(response?.public_id);
-    const { data, error } = await supabase
-      .from('posts')
-      .insert([
-        {
-          caption,
-          image: response?.public_id,
-          user_id: session?.user.id,
-        },
-      ])
-      .select();
-    router.push('/(tabs)');
+    if (!media) return;
+
+    try {
+      const response = await uploadImage(media);
+      console.log(response?.public_id);
+
+      const { data, error } = await supabase
+        .from('posts')
+        .insert([
+          {
+            caption,
+            image: response?.public_id, // Assuming 'image' will hold either an image or video public_id
+            user_id: session?.user.id,
+          },
+        ])
+        .select();
+
+      if (error) {
+        Alert.alert(error.message); // Display an error if something goes wrong
+        return;
+      }
+
+      router.push('/(tabs)'); // Navigate to tabs after successfully creating the post
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error creating post. Please try again.');
+    }
   };
 
   return (
-    <View className="flex-1 items-center  p-3">
-      {/* Image picker */}
-
-      {image ? (
-        <Image className="aspect-[3/4] w-52  rounded-lg bg-slate-400" source={{ uri: image }} />
+    <View className="flex-1 items-center p-3">
+      {/* Media Picker Preview */}
+      {media && mediaType === 'image' ? (
+        <Image
+          style={{ aspectRatio: 3 / 4, width: 200, borderRadius: 8 }}
+          source={{ uri: media }}
+        />
+      ) : media && mediaType === 'video' ? (
+        <Video
+          style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: 8 }}
+          source={{ uri: media }}
+          useNativeControls
+          resizeMode={ResizeMode.CONTAIN}
+          isLooping
+          shouldPlay
+        />
       ) : (
-        <View className="aspect-[3/4] w-52 rounded-lg bg-slate-400" />
+        <View
+          style={{
+            aspectRatio: 3 / 4,
+            width: 200,
+            borderRadius: 8,
+            backgroundColor: '#ddd',
+          }}
+        />
       )}
-      <Text onPress={pickImage} className="m-5 font-semibold text-blue-500">
+
+      {/* Button to Change Media */}
+      <Text
+        onPress={pickMedia}
+        style={{ marginTop: 16, fontSize: 16, color: '#007AFF', fontWeight: '600' }}>
         Change
       </Text>
+
+      {/* Caption Input */}
       <TextInput
         value={caption}
-        onChangeText={(newValue) => setCaption(newValue)}
-        placeholder="What is on your mind"
-        className="  w-full p-3"
+        onChangeText={setCaption}
+        placeholder="What's on your mind?"
+        style={{
+          width: '100%',
+          padding: 12,
+          borderWidth: 1,
+          borderRadius: 8,
+          marginTop: 16,
+          borderColor: '#ccc',
+        }}
       />
-      <View className="mt-auto w-full">
-        <Button onPress={createPost} title={'Share post'} />
+
+      {/* Button to Share Post */}
+      <View style={{ marginTop: 'auto', width: '100%' }}>
+        <Button onPress={createPost} title="Share Post" />
       </View>
     </View>
   );
