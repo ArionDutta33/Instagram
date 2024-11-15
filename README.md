@@ -22,8 +22,12 @@ This is a mobile application built with React Native and Expo that replicates ba
 - **Notifications**:  
   - **Push Notifications**: Real-time notifications for user interactions (like actions).
 
-## Installation
+## Screenshots
 
-Follow these steps to get the project up and running locally.
 
- 
+ -**Feedscreen**
+
+ ![Screenshot from 2024-11-15 18-10-04](https://github.com/user-attachments/assets/bc692225-3dc8-4e73-bad3-eb09a44821da)
+
+-**User Profile**
+![Screenshot from 2024-11-15 18-10-46](https://github.com/user-attachments/assets/2c088d87-9b19-4465-9dc5-b830630c48dc)
