@@ -2,6 +2,7 @@ import { View, Text, Image, TextInput } from 'react-native';
 import React, { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import Button from '~/components/Button';
+import { supabase } from '~/utils/supabase';
 
 const ProfileScreen = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -47,7 +48,7 @@ const ProfileScreen = () => {
       {/* button */}
       <View className="mt-auto gap-2">
         <Button title="Update Profile" />
-        <Button title="Sign out " />
+        <Button title="Sign out " onPress={() => supabase.auth.signOut()} />
       </View>
     </View>
   );
