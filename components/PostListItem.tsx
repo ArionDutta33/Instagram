@@ -14,6 +14,7 @@ import { ResizeMode, Video } from 'expo-av';
 import PostContent from './PostContent';
 import { supabase } from '~/utils/supabase';
 import { useAuth } from '~/app/provider/AuthProvider';
+import { sendLikeNotification } from '~/utils/Notifications';
 
 const PostListItem = ({ post }) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
@@ -53,6 +54,9 @@ const PostListItem = ({ post }) => {
       .from('likes')
       .insert([{ user_id: user?.id, post_id: post.id }])
       .select();
+
+    //send notification
+    sendLikeNotification(data[0]);
 
     setLikedRecored(data[0]);
   };

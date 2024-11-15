@@ -40,7 +40,19 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "48e6d92a-7646-4382-8488-e47b66f856dc"
       }
-    }
+    },
+    "owner": "ariondutta333"
   }
 }
