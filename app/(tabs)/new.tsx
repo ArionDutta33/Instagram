@@ -28,8 +28,6 @@ const CreatePost = () => {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
       setMedia(result.assets[0].uri);
       setMediaType(result.assets[0].type); // Set mediaType to image or video based on selection
@@ -41,7 +39,6 @@ const CreatePost = () => {
 
     try {
       const response = await uploadImage(media);
-      console.log(response?.public_id);
 
       const { data, error } = await supabase
         .from('posts')
@@ -50,6 +47,7 @@ const CreatePost = () => {
             caption,
             image: response?.public_id, // Assuming 'image' will hold either an image or video public_id
             user_id: session?.user.id,
+            media_type: mediaType,
           },
         ])
         .select();

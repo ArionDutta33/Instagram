@@ -26,7 +26,6 @@ const ProfileScreen = () => {
     if (error) {
       Alert.alert(error.message);
     }
-    console.log(JSON.stringify(data, null, 2));
     setUsername(data.username);
     setBio(data.bio);
     setRemoteImage(data.avatar_url);
@@ -42,7 +41,6 @@ const ProfileScreen = () => {
     };
     if (image) {
       const response = await uploadImage(image);
-      console.log('THIS IS THE RESPONSE AND PUBLIC ID', response?.public_id);
       upadatedProfile.avatar_url = response?.public_id;
     }
 
@@ -63,8 +61,6 @@ const ProfileScreen = () => {
       aspect: [1, 1],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
