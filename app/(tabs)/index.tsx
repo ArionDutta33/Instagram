@@ -13,7 +13,10 @@ const FeedScreen = () => {
 
   const fetchPosts = async () => {
     setIsRefreshing(true); // Start refreshing
-    let { data, error } = await supabase.from('posts').select('*,user:profiles(*)');
+    let { data, error } = await supabase
+      .from('posts')
+      .select('*,user:profiles(*),my_likes:likes(*),likes(count)')
+      .order('created_at', { ascending: false });
     if (error) {
       Alert.alert(error.message);
     }

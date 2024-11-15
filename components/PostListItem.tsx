@@ -20,8 +20,11 @@ const PostListItem = ({ post }) => {
   const [likedRecord, setLikedRecored] = useState(null);
   const { user } = useAuth();
   useEffect(() => {
-    fetchLike();
-  }, []);
+    if (post.my_likes.length > 0) {
+      setLikedRecored(post.my_likes[0]);
+      setIsLiked(true);
+    }
+  }, [post.my_likes]);
   useEffect(() => {
     if (isLiked) {
       onSaveLikedPost();
@@ -31,18 +34,18 @@ const PostListItem = ({ post }) => {
   }, [isLiked]);
   console.log(likedRecord);
 
-  const fetchLike = async () => {
-    const { data, error } = await supabase
-      .from('likes')
-      .select('*')
-      .eq('user_id', user?.id)
-      .eq('post_id', post.id)
-      .select();
-    if (data && data?.length > 0) {
-      setLikedRecored(data[0]);
-      setIsLiked(true);
-    }
-  };
+  // const fetchLike = async () => {
+  //   const { data, error } = await supabase
+  //     .from('likes')
+  //     .select('*')
+  //     .eq('user_id', user?.id)
+  //     .eq('post_id', post.id)
+  //     .select();
+  //   if (data && data?.length > 0) {
+  //     setLikedRecored(data[0]);
+  //     setIsLiked(true);
+  //   }
+  // };
 
   const onSaveLikedPost = async () => {
     if (likedRecord) return;
@@ -72,7 +75,6 @@ const PostListItem = ({ post }) => {
         <Text className="font-semibold ">{post.user.username || 'New User'}</Text>
       </View>
       <PostContent post={post} />
-
       <View className={`flex-row gap-3 p-3`}>
         <AntDesign
           onPress={() => setIsLiked(!isLiked)}
@@ -83,6 +85,13 @@ const PostListItem = ({ post }) => {
         <Ionicons name="chatbubble-outline" size={20} color="black" />
         <Feather name="send" size={20} color="black" />
         <Feather name="bookmark" className="ml-auto" size={20} color="black" />
+      </View>
+      <View className="gap-1 px-3">
+        <Text className="font-semibold">{post.likes[0]?.count || 0} Likes</Text>
+        <Text>
+          <Text className="  font-semibold">{post.user.username || 'New User'}</Text>
+          <Text className="px-2"> {post.caption}</Text>
+        </Text>
       </View>
     </View>
   );
