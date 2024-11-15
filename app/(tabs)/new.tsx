@@ -3,9 +3,13 @@ import React, { useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import Button from '~/components/Button';
 import { uploadImage } from '~/libs/cloudinary';
+import { supabase } from '~/utils/supabase';
+import { useAuth } from '../provider/AuthProvider';
+import { router } from 'expo-router';
 const CreatePost = () => {
   const [caption, setCaption] = useState('');
   const [image, setImage] = useState<string | null>(null);
+  const { session } = useAuth();
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -33,6 +37,17 @@ const CreatePost = () => {
     if (!image) return;
     const response = await uploadImage(image);
     console.log(response?.public_id);
+    const { data, error } = await supabase
+      .from('posts')
+      .insert([
+        {
+          caption,
+          image: response?.public_id,
+          user_id: session?.user.id,
+        },
+      ])
+      .select();
+    router.push('/(tabs)');
   };
 
   return (
