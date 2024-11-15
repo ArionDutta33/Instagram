@@ -42,7 +42,7 @@ const PostListItem = ({ post }) => {
           useNativeControls
           resizeMode={ResizeMode.CONTAIN}
           isLooping
-          shouldPlay
+          // shouldPlay
         />
       )}
 
