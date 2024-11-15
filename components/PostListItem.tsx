@@ -19,14 +19,33 @@ const PostListItem = ({ post }) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [likedRecord, setLikedRecored] = useState(null);
   const { user } = useAuth();
-
   useEffect(() => {
-    if (isLiked) onSaveLikedPost();
-    else deleteLike();
+    fetchLike();
+  }, []);
+  useEffect(() => {
+    if (isLiked) {
+      onSaveLikedPost();
+    } else {
+      deleteLike();
+    }
   }, [isLiked]);
   console.log(likedRecord);
 
+  const fetchLike = async () => {
+    const { data, error } = await supabase
+      .from('likes')
+      .select('*')
+      .eq('user_id', user?.id)
+      .eq('post_id', post.id)
+      .select();
+    if (data && data?.length > 0) {
+      setLikedRecored(data[0]);
+      setIsLiked(true);
+    }
+  };
+
   const onSaveLikedPost = async () => {
+    if (likedRecord) return;
     const { data, error } = await supabase
       .from('likes')
       .insert([{ user_id: user?.id, post_id: post.id }])
@@ -37,7 +56,10 @@ const PostListItem = ({ post }) => {
 
   const deleteLike = async () => {
     if (likedRecord) {
-      await supabase.from('likes').delete().eq('id', likedRecord.id);
+      const { data, error } = await supabase.from('likes').delete().eq('id', likedRecord.id);
+      if (!error) {
+        setLikedRecored(null);
+      }
     }
   };
 
